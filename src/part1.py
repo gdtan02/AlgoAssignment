@@ -1,63 +1,53 @@
 from PIL import Image, ImageDraw
 from collections import deque as queue
 
+
+
 # Read the FloorPlan.txt file
-file = open("FloorPlan.txt", "r")
+def readFile():
+    file = open("FloorPlan.txt", "r")
 
-# Declare the array to store the floor plan layout 
-ground_floor = []
-first_floor = [] 
-temp_floor = ''   # For floor tracking purpose
-ground_images = []
-first_images = []
+    # Declare the array to store the floor plan layout 
+    global ground_floor
+    global first_floor
+    temp_floor = ''   # For floor tracking purpose
+    global ground_images
+    global first_images
 
-# Read the file and convert it into numerical value
-for line in file.readlines():
-    if (line[0] == 'G'):
-        temp_floor = 'G'
-        continue
-    elif (line[0] == 'F'):
-        temp_floor = 'F'
-        continue
-    
-    row = []
-    
-    for c in line:
-        if (c.isspace() and c != "\n"):
-            row.append(1)    # Walkable path
-        elif (c != "\n"):
-            row.append(0)    # Boundaries
+    # Read the file and convert it into numerical value
+    for line in file.readlines():
+        if (line[0] == 'G'):
+            temp_floor = 'G'
+            continue
+        elif (line[0] == 'F'):
+            temp_floor = 'F'
+            continue
+        
+        row = []
+        
+        for c in line:
+            if (c.isspace() and c != "\n"):
+                row.append(1)    # Walkable path
+            elif (c != "\n"):
+                row.append(0)    # Boundaries
+                
+        if temp_floor == 'G':
+            ground_floor.append(row)
+        else:
+            first_floor.append(row)
             
-    if temp_floor == 'G':
-        ground_floor.append(row)
-    else:
-        first_floor.append(row)
-        
-file.close()
+    file.close()
 
-# Display the floor layout in numerical value
-print("Ground Floor: ")
-for r in ground_floor:
-    print(r)
-    
-print("\nFirst Floor:")
-for r in first_floor:
-    print(r)
+    # Display the floor layout in numerical value
+    print("Ground Floor: ")
+    for r in ground_floor:
+        print(r)
+        
+    print("\nFirst Floor:")
+    for r in first_floor:
+        print(r)
 
         
-zoom = 20
-borders = 6
-floor_rows = len(ground_floor)
-floor_cols = len(ground_floor[0])
-d_row = [-1, 0, 1, 0]
-d_col = [0, 1, 0, -1]
-
-# Starting point and ending point
-ground_start = [11,15]
-ground_end = [1,1]
-first_start = [1,1]
-first_end = [13, 19]
-path = []
 
 def isValid(visited, floor, row, col):
     global floor_rows
@@ -205,6 +195,29 @@ def draw_matrix(current_floor, movement, start, end):
         ground_images.append(layout)
     else:
         first_images.append(layout)
+
+
+ground_floor = []
+first_floor = []
+ground_images = []
+first_images = []
+
+readFile()
+
+zoom = 20
+borders = 6
+floor_rows = len(ground_floor)
+floor_cols = len(ground_floor[0])
+d_row = [-1, 0, 1, 0]
+d_col = [0, 1, 0, -1]
+
+
+# Starting point and ending point
+ground_start = [11,15]
+ground_end = [1,1]
+first_start = [1,1]
+first_end = [13, 19]
+path = []
 
 BFS('G', ground_start, ground_end)
 BFS('F', first_start, first_end)
