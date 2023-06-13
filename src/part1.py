@@ -1,10 +1,8 @@
 from PIL import Image, ImageDraw
 from collections import deque as queue
 
-
-
 # Read the FloorPlan.txt file
-def readFile():
+def create_floor_plan():
     file = open("FloorPlan.txt", "r")
 
     # Declare the array to store the floor plan layout 
