@@ -73,18 +73,23 @@ def DFS(current_floor, start, end):
     global d_row
     global d_col
     
+    # Set the floor layout
     if(current_floor == 'G'):
         floor = ground_floor
     else:
         floor = first_floor
         
+    # Initialize a boolean array to keep track of visited cells.
     visited = [[not floor[i][j] for j in range(floor_cols)] for i in range(floor_rows)]
+    # Movement array for path construction purpose.
     movement = [[0 for j in range(floor_cols)] for i in range(floor_rows)]
     step = 1
     
+    # Declare an empty stack and append the starting cell into it
     stack = []
     stack.append([start[0], start[1]])
     
+    # Loop until the stack is empty (all the cells have been searched)
     while(len(stack) > 0):
         current_cell = stack[len(stack)-1]
         stack.remove(stack[len(stack)-1])
@@ -92,15 +97,19 @@ def DFS(current_floor, start, end):
         current_row = current_cell[0]
         current_col = current_cell[1]
         
+        # Check the current cell is valid or not using the helper function: isValid()
         if(not isValid(visited, floor, current_row, current_col)):
             continue
         
+        # If the cell is valid, update the visited array by setting it to be True
         visited[current_row][current_col] = True
         movement[current_row][current_col] = step
         path.append([current_row, current_col])
+        # Draw the floor layout every time when new cell is explored
         draw_matrix(current_floor, movement, start, end)
         step += 1
         
+        # Add the adjacent cells into the stack
         for i in range(4):
             adjx = current_row + d_row[i]
             adjy = current_col + d_col[i]
@@ -147,34 +156,39 @@ def DFS(current_floor, start, end):
 #                 draw_matrix(current_floor, movement, start, end)
                 
 
+# A function to draw out the floor layout with the help of Pillow, one of Python library
 def draw_matrix(current_floor, movement, start, end):
     global floor_rows
     global floor_cols
     global ground_floor
     global first_floor
     
+    # Load the floor layout (numerical array)
     if(current_floor == 'G'):
         floor = ground_floor
     else:
         floor = first_floor
 
+    # Create an empty image of floor layout
     layout = Image.new('RGB', (zoom * floor_cols , zoom * floor_rows), (255, 255, 255))
     draw = ImageDraw.Draw(layout)
     
+    # Label the floor layout 
     for i in range(floor_rows):
         for j in range(floor_cols):
             color = (255, 255, 255)
             r = 0
-            if floor[i][j] == 0:
+            if floor[i][j] == 0:            # Non-walkable path
                 color = (0, 0, 0)
             if (start[0] == i and start[1] == j):   # Starting point
                 color = (0, 255, 0)
                 r = borders
-            if end[0] == i and end[1] == j and current_floor == 'G':   # Ending point
+            if end[0] == i and end[1] == j and current_floor == 'G':   # Ending point (only Ground Floor has the ending point)
                 color = (0, 0, 255)
                 r = borders
             draw.rectangle((j * zoom+r, i * zoom+r, j*zoom+zoom-r-1, i * zoom+zoom-r-1), fill = color)
             
+            # Label the movement (explored cell)
             if(movement[i][j] > 0):
                 r = borders
                 draw.ellipse((j*zoom+r, i*zoom+r, j*zoom+zoom-r-1, i*zoom+zoom-r-1), fill=(255,0,0))
@@ -188,6 +202,7 @@ def draw_matrix(current_floor, movement, start, end):
     #     x1 = path[u+1][0] * zoom + int(zoom/2)
     #     draw.line((x,y,x1,y1), fill=(255,0,0), width=5)
         
+    # Append the current layout into the ground_images (a list of images)
     draw.rectangle((0,0,zoom*floor_cols, zoom*floor_rows), outline = (0, 255, 0), width=2)
     if(current_floor == 'G'):
         ground_images.append(layout)
@@ -195,31 +210,29 @@ def draw_matrix(current_floor, movement, start, end):
         first_images.append(layout)
 
 
-ground_floor = []
-first_floor = []
-ground_images = []
-first_images = []
 
-create_floor_plan()
-
-zoom = 20
+# Main method
+ground_floor = []       # To store the numerical format of Ground Floor layout
+first_floor = []        # To store the numerical format of First Floor layout
+ground_images = []      # To store the images of Ground Floor layout that will be used to generate the gif animation
+first_images = []       # To store the images of Ground Floor layout that will be used to generate the gif animation
+zoom = 20               
 borders = 6
-floor_rows = len(ground_floor)
-floor_cols = len(ground_floor[0])
-d_row = [-1, 0, 1, 0]
-d_col = [0, 1, 0, -1]
+floor_rows = len(ground_floor)          # To store the number of rows of the floor layout
+floor_cols = len(ground_floor[0])       # To store the number of columns of the floor layout
+d_row = [-1, 0, 1, 0]   # Used to compare the adjacent cells in DFS
+d_col = [0, 1, 0, -1]   # Used to compare the adjacent cells in DFS
+
+create_floor_plan()     # Read file and set the values for ground_floor and first_floor
 
 
-# Starting point and ending point
+# Set the Starting point and ending point
 ground_start = [11,15]
 ground_end = [1,1]
 first_start = [1,1]
-first_end = [13, 19]
-path = []
-
 
 DFS('G', ground_start, ground_end)
-DFS('F', first_start, first_end)
+DFS('F', first_start, [0,0])
 
 ground_images[0].save('ground_dfs.gif', save_all=True, append_images=ground_images[1:], optimize=False, duration=1, loop=0) 
 first_images[0].save('first_dfs.gif', save_all=True, append_images=first_images[1:], optimize=False, duration=1, loop=0)
