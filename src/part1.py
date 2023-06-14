@@ -104,7 +104,6 @@ def DFS(current_floor, start, end):
         # If the cell is valid, update the visited array by setting it to be True
         visited[current_row][current_col] = True
         movement[current_row][current_col] = step
-        path.append([current_row, current_col])
         # Draw the floor layout every time when new cell is explored
         draw_matrix(current_floor, movement, start, end)
         step += 1
@@ -218,12 +217,13 @@ ground_images = []      # To store the images of Ground Floor layout that will b
 first_images = []       # To store the images of Ground Floor layout that will be used to generate the gif animation
 zoom = 20               
 borders = 6
+
+create_floor_plan()     # Read file and set the values for ground_floor and first_floor
+
 floor_rows = len(ground_floor)          # To store the number of rows of the floor layout
 floor_cols = len(ground_floor[0])       # To store the number of columns of the floor layout
 d_row = [-1, 0, 1, 0]   # Used to compare the adjacent cells in DFS
 d_col = [0, 1, 0, -1]   # Used to compare the adjacent cells in DFS
-
-create_floor_plan()     # Read file and set the values for ground_floor and first_floor
 
 
 # Set the Starting point and ending point
