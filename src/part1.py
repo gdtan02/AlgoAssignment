@@ -106,45 +106,45 @@ def DFS(current_floor, start, end):
             adjy = current_col + d_col[i]
             stack.append([adjx, adjy])
 
-def BFS(current_floor, start, end):
-    global floor_rows
-    global floor_cols
-    global ground_floor
-    global first_floor
-    global d_row
-    global d_col
+# def BFS(current_floor, start, end):
+#     global floor_rows
+#     global floor_cols
+#     global ground_floor
+#     global first_floor
+#     global d_row
+#     global d_col
     
-    if(current_floor == 'G'):
-        floor = ground_floor
-    else:
-        floor = first_floor
+#     if(current_floor == 'G'):
+#         floor = ground_floor
+#     else:
+#         floor = first_floor
     
-    visited = [[not floor[i][j] for j in range(floor_cols)] for i in range(floor_rows)]
-    movement = [[0 for j in range(floor_cols)] for i in range(floor_rows)]
-    step = 1
+#     visited = [[not floor[i][j] for j in range(floor_cols)] for i in range(floor_rows)]
+#     movement = [[0 for j in range(floor_cols)] for i in range(floor_rows)]
+#     step = 1
     
-    q = queue()
-    q.append((start[0], start[1]))
-    visited[start[0]][start[1]] = True
-    movement[start[0]][start[1]] = step
-    draw_matrix(current_floor, movement, start, end)
+#     q = queue()
+#     q.append((start[0], start[1]))
+#     visited[start[0]][start[1]] = True
+#     movement[start[0]][start[1]] = step
+#     draw_matrix(current_floor, movement, start, end)
 
     
-    while(len(q) > 0):
-        current_cell = q.popleft()
-        row = current_cell[0]
-        col = current_cell[1]
+#     while(len(q) > 0):
+#         current_cell = q.popleft()
+#         row = current_cell[0]
+#         col = current_cell[1]
 
         
-        for i in range(4):
-            adjx = row + d_row[i]
-            adjy = col + d_col[i]
-            if (isValid(visited, floor, adjx, adjy)):
-                q.append((adjx, adjy))
-                step += 1
-                visited[adjx][adjy] = True
-                movement[adjx][adjy] = step
-                draw_matrix(current_floor, movement, start, end)
+#         for i in range(4):
+#             adjx = row + d_row[i]
+#             adjy = col + d_col[i]
+#             if (isValid(visited, floor, adjx, adjy)):
+#                 q.append((adjx, adjy))
+#                 step += 1
+#                 visited[adjx][adjy] = True
+#                 movement[adjx][adjy] = step
+#                 draw_matrix(current_floor, movement, start, end)
                 
 
 def draw_matrix(current_floor, movement, start, end):
@@ -170,7 +170,7 @@ def draw_matrix(current_floor, movement, start, end):
             if (start[0] == i and start[1] == j):   # Starting point
                 color = (0, 255, 0)
                 r = borders
-            if (end[0] == i and end[1] == j):   # Ending point
+            if end[0] == i and end[1] == j and current_floor == 'G':   # Ending point
                 color = (0, 0, 255)
                 r = borders
             draw.rectangle((j * zoom+r, i * zoom+r, j*zoom+zoom-r-1, i * zoom+zoom-r-1), fill = color)
@@ -200,7 +200,7 @@ first_floor = []
 ground_images = []
 first_images = []
 
-readFile()
+create_floor_plan()
 
 zoom = 20
 borders = 6
@@ -217,15 +217,6 @@ first_start = [1,1]
 first_end = [13, 19]
 path = []
 
-BFS('G', ground_start, ground_end)
-BFS('F', first_start, first_end)
-
-# draw_matrix(ground_floor, start, end, path)
-ground_images[0].save('ground_bfs.gif', save_all=True, append_images=ground_images[1:], optimize=False, duration=1, loop=0) 
-first_images[0].save('first_bfs.gif', save_all=True, append_images=first_images[1:], optimize=False, duration=1, loop=0)
-
-ground_images=[]
-first_images=[]
 
 DFS('G', ground_start, ground_end)
 DFS('F', first_start, first_end)
